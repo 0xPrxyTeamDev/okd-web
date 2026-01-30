@@ -24,18 +24,21 @@ sed -i 's/SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
 ```
 
 ### boot into centos stream coreos will fail (fsck fail)
-In the boot process the disk check with fsck fails, because in the upgrade from FCOS to SCOS the kernel will be downgraded from 6.x to 5.x<br>
-and this results in an unknown attribute for a ext4 filesystem (orphan_file).<br>
-This attribute must be removed from the underlaying disk, but this can only be done, when the assosiated filesystem is unmounted !<br>
-A possible work-a-round is to remove it in the startup process.<br>
+In the boot process the disk check with fsck fails, because in the upgrade from FCOS to SCOS the kernel will be downgraded from 6.x to 5.x and this results in an unknown attribute for a ext4 filesystem (orphan_file).
+
+This attribute must be removed from the underlaying disk, but this can only be done, when the assosiated filesystem is unmounted !
+
+A possible work-a-round is to remove it in the startup process.
+
 #### If you have console access
-you can configure the grub-bootloader with this options to interup the boot process:<br>
+you can configure the grub-bootloader with this options to interup the boot process:
+
 ```
 rd.break rd.shell
 ```
-In the shell you have to run the following command for all your ext4-partitions.<br>
-In most cases this will be /dev/sda3 for /boot<br>
-and /dev/sda5 for /var:
+In the shell you have to run the following command for all your ext4-partitions.
+
+In most cases this will be /dev/sda3 for /boot and /dev/sda5 for /var:
 ```
 lsblk
 
@@ -70,13 +73,14 @@ systemctl daemon-reload
 systemctl enable disable-orphanfile.service
 ```
 ### upgrade fail when extra packages are installed
-Remove this packages with e.g.:<br>
+Remove this packages with e.g.:
+
 ```
 rpm-ostree uninstall ipset ipvsadm
 ```
 ### disk names has changed after boot
-Use <b>lsblk<b> to identify your boot-partition (e.g.: /dev/sda3)<br>
-Edit your grub-bootloader and add the option:<br>
+Use <b>lsblk</b> to identify your boot-partition (e.g.: /dev/sda3)
+Edit your grub-bootloader and add the option:
 scsi_mod.scan=sync
 ```
 mount -o remount,rw /dev/sda3 /boot
